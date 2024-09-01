@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package reminderhandler;
+
+import "google/protobuf/timestamp.proto";
+
+service ReminderHandler {
+  rpc CreateReminder(CreateReminderRequest) returns (CreateReminderResponse) {}
+  rpc GetAllReminders(GetAllRemindersRequest)
+      returns (stream GetAllRemindersResponse) {}
+  rpc GetReminderById(GetReminderByIdRequest)
+      returns (GetReminderByIdResponse) {}
+  rpc SearchReminderByTitle(SearchReminderByTitleRequest)
+      returns (stream SearchReminderByTitleResponse) {}
+}
+
+message CreateReminderRequest { NewReminder reminder = 1; }
+
+message CreateReminderResponse {
+  bool created = 1;
+  optional Reminder reminder = 2;
+}
+
+message GetAllRemindersRequest { optional bool only_active = 1; }
+
+message GetAllRemindersResponse { repeated Reminder reminder = 1; }
+
+message GetReminderByIdRequest { string id = 1; }
+
+message GetReminderByIdResponse {
+  bool found = 1;
+  optional Reminder reminder = 2;
+}
+
+message SearchReminderByTitleRequest { string title = 1; }
+
+message SearchReminderByTitleResponse { repeated Reminder reminder = 1; }
+
+enum Urgency {
+  EXTREME = 0;
+  HIGH = 1;
+  NORMAL = 2;
+  LOW = 3;
+}
+
+message NewReminder {
+  string title = 1;
+  optional string description = 2;
+  optional Urgency urgency = 3;
+  google.protobuf.Timestamp deadline = 4;
+}
+
+message Reminder {
+  string id = 1;
+  bool active = 2;
+  string title = 3;
+  optional string description = 4;
+  Urgency urgency = 5;
+  google.protobuf.Timestamp started = 6;
+  google.protobuf.Timestamp deadline = 7;
+}
